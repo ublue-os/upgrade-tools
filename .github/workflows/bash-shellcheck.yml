@@ -1,0 +1,31 @@
+name: bash shellcheck
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+      - master
+      - canon
+  pull_request: {}
+permissions:
+  contents: read
+jobs:
+  bash-shellcheck:
+    name: bash-shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - id: run-info
+        name: collect job run info
+        run: |
+          all_shell_scripts=()
+          while IFS=$'\n' read -r script; do
+            git check-ignore -q "$script" || all_shell_scripts+=("$script")
+          done < <(grep -irl '#!.*sh' . --exclude-dir={_\*,.git\*,vendor\*})
+          echo "scripts=${all_shell_scripts[@]}" >> $GITHUB_OUTPUT
+      - id: shellcheck
+        if: ${{ steps.run-info.outputs.scripts }}
+        uses: docker://docker.io/koalaman/shellcheck-alpine:v0.9.0
+        with:
+          entrypoint: shellcheck
+          args: --external-sources --exclude=2230 --color=auto ${{ steps.run-info.outputs.scripts }}
