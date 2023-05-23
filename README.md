@@ -1,7 +1,7 @@
 # upgrade-tools
 Migration Tools
 
-# NOTE THIS IS ALPHA SOFTWARE
+# NOTE: THIS IS ALPHA SOFTWARE
 
 ## Use Cases
 
