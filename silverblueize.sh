@@ -16,13 +16,14 @@ set -o pipefail
 
 if [ ! "$(id -u)" = 0 ]; then
   echo "this script must be run as root" >/dev/stderr
+  exit 1
 fi
 
-CMDN="${1}"
+CMDN="${1:-}"
 
 COUNTER=0
 cmd() {
-  if [ ! "$COUNTER" -ge "${CMDN}" ]; then
+  if [ -n "${CMDN}" ] && [ ! "$COUNTER" -ge "${CMDN}" ]; then
     COUNTER=$((COUNTER += 1))
     return
   fi
@@ -34,8 +35,17 @@ cmd() {
   COUNTER=$((COUNTER += 1))
 }
 
+. /etc/os-release
+case "${ID} ${VARIANT_ID}" in
+  "fedora workstation") ;;
+  *)
+    echo "this script must be run on Fedora Workstation" >/dev/stderr
+    exit 1
+    ;;
+esac
+
 cat <<EOF
-Migrate to Silverblueize, where you convert your existing Fedora Workstation install into Fedora Silverblue.
+Welcome to Silverblueize, where you convert your existing Fedora Workstation install into Fedora Silverblue.
 This process may be harmful and is irreversable without disk or partition snapshots (see LVM or btrfs).
 User data, via home partition will persist and programs or other system configurations will likely not.
 
@@ -49,8 +59,8 @@ read -r -p ''
 cmd dnf install -y ostree ostree-grub2
 
 cmd ostree admin init-fs /
-cmd ostree remote add --set=gpgkeypath=/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-38-x86_64 fedora https://ostree.fedoraproject.org --set=contenturl=mirrorlist=https://ostree.fedoraproject.org/mirrorlist
-cmd ostree --repo=/ostree/repo pull fedora:fedora/38/x86_64/silverblue
+cmd ostree remote add --set=gpgkeypath="/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-38-$(uname -m)" fedora https://ostree.fedoraproject.org --set=contenturl=mirrorlist=https://ostree.fedoraproject.org/mirrorlist
+cmd ostree --repo=/ostree/repo pull "fedora:fedora/38/$(uname -m)/silverblue"
 cmd rm -r /boot/loader
 cmd ostree admin os-init fedora
 cmd mv /boot/grub2/grub.cfg /boot/grub2/grub.cfg.bak
