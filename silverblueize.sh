@@ -26,7 +26,7 @@ cmd() {
     COUNTER=$((COUNTER += 1))
     return
   fi
-  CMD="${@}"
+  CMD=$*
   (
     echo "$(date): exec[$COUNTER]: ${CMD}"
     eval "${CMD}" 2>&1
@@ -44,7 +44,7 @@ The procedure will feel like a new install but with persisting user data
 By proceeding, you understand the risk.
 Press [enter] to proceed.
 EOF
-read -p ''
+read -r -p ''
 
 cmd dnf install -y ostree ostree-grub2
 
@@ -60,7 +60,7 @@ OSTREE_DEPLOY_ROOT="$(find /ostree/deploy/fedora/deploy -mindepth 1 -maxdepth 1 
 
 # TODO add /etc/passwd /etc/shadow ?
 for i in /etc/fstab /etc/default/grub /etc/locale.conf /etc/ostree/remotes.d/fedora.conf; do
-  cmd cp $i $OSTREE_DEPLOY_ROOT/$i
+  cmd cp "${i}" "${OSTREE_DEPLOY_ROOT}/${i}"
 done
 cmd sed -i -e 's,/home,/var/home,g' /ostree/deploy/fedora/deploy/*.0/etc/fstab
 cmd cp /boot/loader/grub.cfg /boot/grub2/grub.cfg || true
