@@ -65,7 +65,7 @@ cmd rm -r /boot/loader
 cmd ostree admin os-init fedora
 cmd mv /boot/grub2/grub.cfg /boot/grub2/grub.cfg.bak
 cmd cp /boot/efi/EFI/fedora/grub.cfg /boot/efi/EFI/fedora/grub.cfg.bak
-cmd ostree admin deploy --os=fedora --karg-proc-cmdline fedora:fedora/38/x86_64/silverblue
+cmd ostree admin deploy --os=fedora --karg-proc-cmdline "fedora:fedora/38/$(uname -m)/silverblue"
 OSTREE_DEPLOY_ROOT="$(find /ostree/deploy/fedora/deploy -mindepth 1 -maxdepth 1 -type d)"
 
 # TODO add /etc/passwd /etc/shadow ?
