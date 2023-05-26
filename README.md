@@ -41,6 +41,7 @@ Migration Tools
 - must run as root
 - logs are left in `/var/log/fedora-ws2sb.log`
 - original gist: https://gist.github.com/BobyMCbobs/d9b7cb5e6e05668a841c3ae7a5504fa5
+- blog post: https://blog.calebwoodbine.com/experimenting-with-migrating-from-fedora-workstation-to-fedora-silverblue/
 
 ---
 
